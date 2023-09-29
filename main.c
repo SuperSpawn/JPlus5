@@ -38,6 +38,7 @@ int main(int argc, char **argv)
         goto KILL_PROC;
 
     ParseList_print(&list);
+    putchar('\n');
     AST *ast = AST_build(list.root, list.end);
     if (ast == NULL)
     {

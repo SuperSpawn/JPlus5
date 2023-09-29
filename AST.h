@@ -25,7 +25,7 @@ AST *AST_build(ParseNode *list_begin, ParseNode *list_end)
     {
         if (curr->data == CLOSE_PARENTHESIS_INDEX) // close parenthesis
             --level;
-        if ((grammarBuffer[curr->data].priority < grammarBuffer[target->data].priority) && (level == 0))
+        if ((curr->priority < target->priority) && (level == 0))
             target = curr;
         if (curr->data == OPEN_PARENTHESIS_INDEX) // open parenthesis
             ++level;

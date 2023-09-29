@@ -108,7 +108,7 @@ int get_priority(uint64_t value, int32_t type)
 {
     if (type == -1) // operator
         return grammarBuffer[value].priority;
-    return VARIABLE_PRIORITY; // numbers and variables have same priority
+    return NAMED_PRIORITY; // numbers and variables have same priority
 }
 
 int file_read(FILE *file, ParseList *list, State *states)
@@ -148,7 +148,8 @@ int file_read(FILE *file, ParseList *list, State *states)
         {
             if (states[state].inputs[0])
             {
-                ParseList_push(list, states[state].inputs[0], type);
+                value = states[state].inputs[0] - 1;
+                ParseList_push(list, value, get_priority(value, type));
                 type = new_type(0, input);
                 if (type == -1)
                     state = states[0].inputs[input];
@@ -165,7 +166,8 @@ int file_read(FILE *file, ParseList *list, State *states)
     {
         if (states[state].inputs[0])
         {
-            ParseList_push(list, states[state].inputs[0], type);
+            value = states[state].inputs[0] - 1;
+            ParseList_push(list, value, get_priority(value, type));
             state = states[0].inputs[input];
         }
     }
