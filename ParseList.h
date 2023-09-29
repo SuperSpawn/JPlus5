@@ -8,7 +8,7 @@ typedef struct ParseNode
 {
     struct ParseNode *next;
     uint64_t data;
-    uint32_t type;
+    int priority;
 } ParseNode;
 
 typedef struct ParseList
@@ -22,7 +22,7 @@ void ParseList_create(ParseList *list)
         return;
     list->root = list->end = NULL;
 }
-int ParseList_push(ParseList *list, uint64_t data, uint32_t type)
+int ParseList_push(ParseList *list, uint64_t data, int priority)
 {
     if (list == NULL)
         return 0;
@@ -30,7 +30,7 @@ int ParseList_push(ParseList *list, uint64_t data, uint32_t type)
     if (node == NULL)
         return 1;
     node->data = data;
-    node->type = type;
+    node->priority = priority;
     node->next = NULL;
     if (list->root == NULL)
     {
@@ -51,7 +51,7 @@ void ParseList_print(ParseList *list)
         return;
     for (itr = list->root; itr != NULL; itr = itr->next)
     {
-        printf("(%ld, %ld)-> ", itr->type, itr->data);
+        printf("(%ld, %ld)-> ", itr->priority, itr->data);
     }
 }
 void ParseList_destroy(ParseList *list)

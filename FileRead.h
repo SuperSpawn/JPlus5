@@ -4,6 +4,7 @@
 #include "defs.h"
 #include "ParseList.h"
 #include "state.h"
+#include "operators.h"
 
 #define VARIABLE_NAME_MAX_SIZE 1024
 
@@ -72,13 +73,8 @@ uint64_t update_value(uint64_t value, int input, int type, uint32_t length)
     case 1:
         if (input != '$')
         {
-            if (input >= 'a' && input <= 'z')
-                input -= 'a';
-            if (input >= 'A' && input <= 'Z')
-                input -= 'A';
-            if (input >= '0' && input <= '9')
-                input -= '0';
-            value += (input + 1) * length;
+            value *= 10;
+            value += input - '0';
         }
         break;
     case 2:
@@ -108,11 +104,19 @@ uint64_t update_value(uint64_t value, int input, int type, uint32_t length)
     return value;
 }
 
+int get_priority(uint64_t value, int32_t type)
+{
+    if (type == -1) // operator
+        return grammarBuffer[value].priority;
+    return VARIABLE_PRIORITY; // numbers and variables have same priority
+}
+
 int file_read(FILE *file, ParseList *list, State *states)
 {
     int32_t input, state = 0, type = 0;
     uint32_t length = 1;
     uint64_t value = 0;
+    int priority;
     for (input = fgetc(file); input != EOF; input = fgetc(file))
     {
         if (isspace(input))
@@ -128,7 +132,7 @@ int file_read(FILE *file, ParseList *list, State *states)
         {
             if (value)
             {
-                ParseList_push(list, value, type);
+                ParseList_push(list, value, get_priority(value, type));
                 type = new_type(0, input);
                 if (type == -1)
                     state = states[0].inputs[input];
